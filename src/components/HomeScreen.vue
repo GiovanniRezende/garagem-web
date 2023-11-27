@@ -5,24 +5,44 @@ export default {
   data() {
     return {
       veiculos: [],
+      modelos: [],
       cores: [],
       acessorios: [],
+      categorias: [],
+      imagens: [],
     };
   },
   mounted() {
     this.carregarVeiculos();
     this.carregarCores();
     this.carregarAcessorios();
+    this.carregarCategorias();
+    this.carregarModelos();
   },
   methods: {
     async carregarVeiculos() {
       try {
         const response = await api.get('/api/veiculos/');
         this.veiculos = response.data;
+
+        this.veiculos.forEach(async (veiculo) => {
+          veiculo.image_url = await this.carregarImagemVeiculo(veiculo.id);
+        });
       } catch (error) {
         console.error('Erro ao carregar veículos', error);
       }
     },
+
+    async carregarImagemVeiculo(veiculoId) {
+      try {
+        const response = await api.get(`/api/veiculos/${veiculoId}/imagem/`);
+        return response.data.image_url;
+      } catch (error) {
+        console.error(`Erro ao carregar imagem do veículo ${veiculoId}`, error);
+        return ''; 
+      }
+    },
+
     async carregarCores() {
       try {
         const response = await api.get('/api/cores/');
@@ -39,6 +59,22 @@ export default {
         console.error('Erro ao carregar acessórios', error);
       }
     },
+    async carregarModelos() {
+      try {
+        const response = await api.get('/api/modelos/');
+        this.modelos = response.data;
+      } catch (error) {
+        console.error('Erro ao carregar modelos', error);
+      }
+    },
+    async carregarCategorias() {
+      try {
+        const response = await api.get('/api/categorias/');
+        this.categorias = response.data;
+      } catch (error) {
+        console.error('Erro ao carregar categorias', error);
+      }
+    },
   },
 };
 </script>
@@ -49,33 +85,35 @@ export default {
       <h1>Garagem do Giovanni Gay</h1>
     </header>
     <main>
-      <div v-for="veiculo in veiculos" :key="veiculo.id" class="card-container">
-        <div class="card">
-          <h2>{{ veiculo.descricao }}</h2>
-          <img :src="veiculo.image_url" alt="Imagem do Veículo" />
-          <div class="details">
-            <div><strong>Categoria:</strong> {{ veiculo.categorias }}</div>
-            <div><strong>Descrição:</strong> {{ veiculo.descricao }}</div>
-            <div><strong>Modelo:</strong> {{ veiculo.modelo }}</div>
-            <div><strong>Cores:</strong>
-              <div v-for="cor in cores" :key="cor.id">
-                {{ cor.descricao }}
-              </div>
+      <div class="card-container">
+        <div v-for="veiculo in veiculos" :key="veiculo.id" class="card">
+          <img :src="veiculo.image.url" alt="Imagem do Veículo" />
+          <div><strong>Descrição:</strong> {{ veiculo.descricao }}</div>
+          <div><strong>Categoria:</strong>
+            <div v-for="categoria in categorias" :key="categoria.id">
+              {{ categoria.descricao }}
             </div>
-            <div><strong>Ano:</strong> {{ veiculo.ano }}</div>
-            <div><strong>Preço:</strong> R$ {{ veiculo.preco }}</div>
-            <div><strong>Acessórios:</strong>
-              <div v-for="acessorio in acessorios" :key="acessorio.id">
-                {{ acessorio.descricao }}
-              </div>
+          </div>
+          <div><strong>Cores:</strong>
+            <div v-for="cor in cores" :key="cor.id">
+              {{ cor.descricao }}
+            </div>
+          </div>
+          <div><strong>Ano:</strong> {{ veiculo.ano }}</div>
+          <div><strong>Preço:</strong> R$ {{ veiculo.preco }}</div>
+          <div><strong>Acessórios:</strong>
+            <div v-for="acessorio in acessorios" :key="acessorio.id">
+              {{ acessorio.descricao }}
             </div>
           </div>
         </div>
       </div>
-    
     </main>
   </div>
 </template>
+
+
+
 <style scoped>
 header {
   text-align: center;
