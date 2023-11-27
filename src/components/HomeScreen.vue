@@ -87,7 +87,7 @@ export default {
     <main>
       <div class="card-container">
         <div v-for="veiculo in veiculos" :key="veiculo.id" class="card">
-          <img :src="veiculo.image.url" alt="Imagem do Veículo" />
+          <img :src="veiculo.image[0].file" alt="Imagem do Veículo" />
           <div><strong>Descrição:</strong> {{ veiculo.descricao }}</div>
           <div><strong>Categoria:</strong>
             <div v-for="categoria in categorias" :key="categoria.id">
