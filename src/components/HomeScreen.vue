@@ -24,10 +24,6 @@ export default {
       try {
         const response = await api.get('/api/veiculos/');
         this.veiculos = response.data;
-
-        this.veiculos.forEach(async (veiculo) => {
-          veiculo.image_url = await this.carregarImagemVeiculo(veiculo.id);
-        });
       } catch (error) {
         console.error('Erro ao carregar veículos', error);
       }
@@ -88,10 +84,11 @@ export default {
       <div class="card-container">
         <div v-for="veiculo in veiculos" :key="veiculo.id" class="card">
           <img :src="veiculo.image[0].file" alt="Imagem do Veículo" />
+
           <div><strong>Descrição:</strong> {{ veiculo.descricao }}</div>
           <div><strong>Categoria:</strong>
-            <div v-for="categoria in categorias" :key="categoria.id">
-              {{ categoria.descricao }}
+            <div v-for="veiculo in veiculos" :key="veiculo.id">
+              {{ veiculos.categoria}}
             </div>
           </div>
           <div><strong>Cores:</strong>
